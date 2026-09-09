@@ -1,7 +1,8 @@
 # DJUTV
 
-The website for **DJUTV** — DJ Univercity's Chicago interview channel. Exclusive in-the-street
+The website for **DJ U TV** — Chicago's in-the-street interview channel, hosted by DJ U. Exclusive
 conversations with entertainers, entrepreneurs and community leaders, running since October 2015.
+The slogan is **#DJUGOCRAZY**.
 
 A single static page with no build step, no framework and no dependencies to install. Open
 `index.html` in a browser and it works.
