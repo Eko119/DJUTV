@@ -2,7 +2,43 @@
    button rather than leaving a dead mailto: on the page. */
 const BOOKING_EMAIL = "booking@djugocrazy.com";
 
+/* Google IDs — paste the real values in to switch each service on.
+   While a value is empty nothing is requested from Google and no cookie is
+   set, so the site stays clean rather than shipping a broken tag. */
+const GA4_MEASUREMENT_ID = "";      // Google Analytics, looks like "G-XXXXXXXXXX"
+const ADSENSE_PUBLISHER_ID = "";    // AdSense, looks like "ca-pub-0000000000000000"
+
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---- Google Analytics ---- */
+if (GA4_MEASUREMENT_ID) {
+  const tag = document.createElement("script");
+  tag.async = true;
+  tag.src = "https://www.googletagmanager.com/gtag/js?id=" + GA4_MEASUREMENT_ID;
+  document.head.append(tag);
+
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("js", new Date());
+  window.gtag("config", GA4_MEASUREMENT_ID);
+}
+
+/* One page means pageviews say almost nothing. These three events are the
+   questions worth answering: do people watch, book, or follow? */
+function track(event, params) {
+  if (window.gtag) window.gtag("event", event, params);
+}
+
+/* ---- Google AdSense ----
+   Auto ads: placement and density are controlled from the AdSense dashboard,
+   so changing them never needs a code change. */
+if (ADSENSE_PUBLISHER_ID) {
+  const tag = document.createElement("script");
+  tag.async = true;
+  tag.crossOrigin = "anonymous";
+  tag.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=" + ADSENSE_PUBLISHER_ID;
+  document.head.append(tag);
+}
 
 /* ---- current year ---- */
 const yearEl = document.querySelector("[data-year]");
@@ -13,10 +49,23 @@ const bookingActions = document.querySelector("[data-booking-actions]");
 if (bookingActions && BOOKING_EMAIL) {
   const mail = document.createElement("a");
   mail.className = "btn btn--ghost";
-  mail.href = "mailto:" + BOOKING_EMAIL + "?subject=" + encodeURIComponent("DJ U TV interview request");
+  mail.href = "mailto:" + BOOKING_EMAIL + "?subject=" + encodeURIComponent("DJUTV interview request");
   mail.textContent = "Email booking";
   bookingActions.append(mail);
 }
+if (bookingActions) {
+  bookingActions.addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (link) track("booking_click", { method: link.protocol === "mailto:" ? "email" : "instagram" });
+  });
+}
+
+/* ---- follow clicks ---- */
+document.querySelectorAll(".socials a, .platforms a").forEach((link) => {
+  link.addEventListener("click", () => {
+    track("outbound_click", { destination: new URL(link.href).hostname.replace(/^www\./, "") });
+  });
+});
 
 /* ---- seamless ticker ----
    The CSS loop translates the track by -50%, so the marquee only lines up
@@ -45,6 +94,7 @@ document.querySelectorAll("[data-video]").forEach((item) => {
     button.replaceChildren(frame);
     button.disabled = true;
     button.style.cursor = "default";
+    track("video_play", { video_id: id, video_title: item.querySelector("h3")?.textContent.trim() });
   }, { once: true });
 });
 

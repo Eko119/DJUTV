@@ -1,6 +1,6 @@
 # DJUTV
 
-The website for **DJ U TV** — Chicago's in-the-street interview channel, hosted by DJ U. Exclusive
+The website for **DJUTV** — Chicago's in-the-street interview channel, hosted by DJ U. Exclusive
 conversations with entertainers, entrepreneurs and community leaders, running since October 2015.
 The slogan is **#DJUGOCRAZY**.
 
@@ -43,7 +43,7 @@ matter and are easy to get wrong:
 ```
 index.html              the whole page
 assets/css/styles.css   design tokens + all component styles
-assets/js/main.js       click-to-play embeds, halftone canvas, ticker, booking CTA
+assets/js/main.js       Google tags, click-to-play embeds, halftone canvas, ticker, booking CTA
 assets/img/             logo (full, small, favicon) + the link-preview card
 CNAME                   claims djugocrazy.com for GitHub Pages
 .nojekyll               serve the files as-is instead of running them through Jekyll
@@ -51,14 +51,11 @@ CNAME                   claims djugocrazy.com for GitHub Pages
 
 ## Naming
 
-The brand is written two ways on purpose, so keep them straight when editing:
+The brand is **DJUTV**, written closed up everywhere — page title, headings, body copy, structured
+data, the wordmark beside the logo, and the share card. Not "DJ U TV". The host is **DJ U**.
 
-- **DJ U TV** in prose and metadata — the page title, headings, body copy, structured data.
-- **DJUTV** only as the compact wordmark beside the logo (header and footer), and wherever it is a
-  literal handle or URL: `@DJUTV`, `facebook.com/DJUTV`.
-
-The host is **DJ U**. Earlier drafts credited a "DJ Univercity"; that name was wrong and should not
-reappear.
+Two names have already been through a correction and should not come back: "DJ Univercity" was
+never right, and a spaced-out "DJ U TV" was used briefly before being reverted.
 
 ## Keeping it current
 
@@ -113,6 +110,44 @@ emptied, not left in place.
 The address is not a mailbox. Cloudflare Email Routing forwards it to a personal inbox, which means
 mail can be received but not sent from it — replies come from whatever inbox it forwards to. Its
 DNS records live in the Cloudflare zone alongside the site's.
+
+## Analytics and ads
+
+`GA4_MEASUREMENT_ID` and `ADSENSE_PUBLISHER_ID` sit at the top of `assets/js/main.js`, both empty.
+Paste a real ID in and that service switches on; leave it empty and nothing is requested from
+Google and no cookie is set. Neither is wired yet — the IDs come from accounts only the owner can
+open.
+
+**Analytics.** Create a GA4 property at analytics.google.com for `djugocrazy.com` and copy the
+Measurement ID (`G-` followed by ten characters) into `GA4_MEASUREMENT_ID`.
+
+Pageviews on a single-page site say very little, so three custom events carry the useful signal:
+
+- `video_play` — fires when someone actually clicks a video, with its ID and title, so it is
+  visible which interviews pull people in.
+- `booking_click` — fires on the booking CTAs, labelled `email` or `instagram`.
+- `outbound_click` — fires on the follow and podcast links, labelled with the destination host.
+
+They are sent through a `track()` helper that does nothing when analytics is off, so the page
+behaves identically either way.
+
+**Ads.** AdSense is set up for **auto ads**: the one script is loaded with the publisher ID, and
+placement and density are then controlled from the AdSense dashboard, so tuning them never needs a
+code change. Manual ad units would mean hard-coding a slot ID per placement, which is worth doing
+only if auto placement proves too intrusive for the design.
+
+Two things are required before ads will actually serve, and neither is a code change:
+
+- **Approval.** The site has to be added and reviewed in AdSense; the tag earns nothing until it
+  passes. Google also expects a privacy policy disclosing cookie use, which this site does not yet
+  have.
+- **`ads.txt`.** Create a file named `ads.txt` at the repository root containing one line —
+  `google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0`, with the publisher ID digits in
+  place of the zeros. It is deliberately not committed with a placeholder, because an `ads.txt`
+  with the wrong ID is treated as a real claim and is worse than having none.
+
+Both services set cookies, so EU visitors need a consent prompt. AdSense has a built-in consent
+message that covers both — turn it on under Privacy & messaging rather than building one here.
 
 ## Design notes
 
