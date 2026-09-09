@@ -45,16 +45,24 @@ index.html              the whole page
 assets/css/styles.css   design tokens + all component styles
 assets/js/main.js       click-to-play embeds, halftone canvas, ticker, booking CTA
 assets/img/             logo (full, small, favicon)
+CNAME                   claims djugocrazy.com for GitHub Pages
+.nojekyll               serve the files as-is instead of running them through Jekyll
 ```
+
+## Naming
+
+The brand is written two ways on purpose, so keep them straight when editing:
+
+- **DJ U TV** in prose and metadata — the page title, headings, body copy, structured data.
+- **DJUTV** only as the compact wordmark beside the logo (header and footer), and wherever it is a
+  literal handle or URL: `@DJUTV`, `facebook.com/DJUTV`.
+
+The host is **DJ U**. Earlier drafts credited a "DJ Univercity"; that name was wrong and should not
+reappear.
 
 ## Keeping it current
 
-Four things go stale. Each lives in exactly one place:
-
-**Booking email.** Line 3 of `assets/js/main.js` is an empty `BOOKING_EMAIL` constant. Fill it in
-and an "Email booking" button appears next to the Instagram CTA. Left empty, the button never
-renders — the site is deliberately built to show only links that actually work, rather than a dead
-`mailto:` nobody reads.
+Three things go stale. Each lives in exactly one place:
 
 **Channel figures.** The four numbers in the hero (subscribers, total views, videos, years) sit in
 the `<dl class="stats">` block in `index.html`, marked with a comment. They are a snapshot, not a
@@ -73,6 +81,20 @@ the script hides it and a typographic poster underneath takes over, so a card ne
 in `index.html`. The script clones it so the marquee loops seamlessly, which is why the CSS
 animation translates by exactly `-50%` — add or remove names freely, but keep it to a single set in
 the markup and let the script do the duplication.
+
+Only names traceable to an actual upload belong there. The list was trimmed once already after
+guests were added from an unverified summary rather than the channel's own feed.
+
+## Booking address
+
+`BOOKING_EMAIL` at the top of `assets/js/main.js` holds `booking@djugocrazy.com`, and the "Email
+booking" button in the booking section is built from it. Clearing the constant removes the button
+rather than leaving a dead `mailto:` on the page, so an address that stops working should be
+emptied, not left in place.
+
+The address is not a mailbox. Cloudflare Email Routing forwards it to a personal inbox, which means
+mail can be received but not sent from it — replies come from whatever inbox it forwards to. Its
+DNS records live in the Cloudflare zone alongside the site's.
 
 ## Design notes
 

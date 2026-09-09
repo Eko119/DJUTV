@@ -1,6 +1,6 @@
-/* Add the booking address here and an "Email booking" button appears
-   next to the Instagram CTA. Left empty, the site shows only links that work. */
-const BOOKING_EMAIL = "";
+/* Routed by Cloudflare Email Routing. Clearing this hides the "Email booking"
+   button rather than leaving a dead mailto: on the page. */
+const BOOKING_EMAIL = "booking@djugocrazy.com";
 
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -13,7 +13,7 @@ const bookingActions = document.querySelector("[data-booking-actions]");
 if (bookingActions && BOOKING_EMAIL) {
   const mail = document.createElement("a");
   mail.className = "btn btn--ghost";
-  mail.href = "mailto:" + BOOKING_EMAIL + "?subject=" + encodeURIComponent("DJUTV interview request");
+  mail.href = "mailto:" + BOOKING_EMAIL + "?subject=" + encodeURIComponent("DJ U TV interview request");
   mail.textContent = "Email booking";
   bookingActions.append(mail);
 }
