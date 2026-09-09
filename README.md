@@ -42,6 +42,7 @@ matter and are easy to get wrong:
 
 ```
 index.html              the whole page
+privacy.html            privacy policy, required for AdSense approval
 assets/css/styles.css   design tokens + all component styles
 assets/js/main.js       Google tags, click-to-play embeds, halftone canvas, ticker, booking CTA
 assets/img/             logo (full, small, favicon) + the link-preview card
@@ -139,8 +140,7 @@ only if auto placement proves too intrusive for the design.
 Two things are required before ads will actually serve, and neither is a code change:
 
 - **Approval.** The site has to be added and reviewed in AdSense; the tag earns nothing until it
-  passes. Google also expects a privacy policy disclosing cookie use, which this site does not yet
-  have.
+  passes. The privacy policy Google expects is at `privacy.html`, linked from the footer.
 - **`ads.txt`.** Create a file named `ads.txt` at the repository root containing one line —
   `google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0`, with the publisher ID digits in
   place of the zeros. It is deliberately not committed with a placeholder, because an `ads.txt`
@@ -148,6 +148,12 @@ Two things are required before ads will actually serve, and neither is a code ch
 
 Both services set cookies, so EU visitors need a consent prompt. AdSense has a built-in consent
 message that covers both — turn it on under Privacy & messaging rather than building one here.
+
+`privacy.html` describes analytics and advertising as active, because that is the state it exists
+to disclose. Until the two IDs are filled in the page overstates what the site does, which is the
+harmless direction to be wrong in, but the fix is to fill them in rather than to soften the policy.
+The page is written from what the code actually loads, so anything added that talks to a third
+party — a font host, an embed, a form — belongs in it.
 
 ## Design notes
 
