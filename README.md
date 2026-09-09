@@ -64,7 +64,7 @@ the markup and let the script do the duplication.
 
 The palette is sampled from the DJU logo itself rather than picked to taste: the gold of the
 letterforms, the ember of the halftone shading, the steel blue of the comic panel behind it, on the
-blue-black the logo already sits against. Every colour is a CSS custom property in the `:root` block
+blue-black the logo already sits against. Every color is a CSS custom property in the `:root` block
 at the top of `styles.css`, so retuning the whole site is a handful of edits in one place.
 
 The display face is **Big Shoulders Display**, the typeface commissioned for the City of Chicago's
@@ -74,7 +74,7 @@ the star from the Chicago flag.
 
 The page commits to a single dark theme rather than following the viewer's light/dark preference.
 That is intentional: the brand lives on a black ground everywhere else it appears, and a light mode
-would weaken it. Every colour is painted explicitly so the page holds regardless of the host.
+would weaken it. Every color is painted explicitly so the page holds regardless of the host.
 
 YouTube embeds do not load until someone clicks a video. Until then each card is a static image, so
 the page carries no third-party player weight, sets no cookies before consent, and stays fast on the
