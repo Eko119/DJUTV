@@ -44,7 +44,7 @@ matter and are easy to get wrong:
 index.html              the whole page
 assets/css/styles.css   design tokens + all component styles
 assets/js/main.js       click-to-play embeds, halftone canvas, ticker, booking CTA
-assets/img/             logo (full, small, favicon)
+assets/img/             logo (full, small, favicon) + the link-preview card
 CNAME                   claims djugocrazy.com for GitHub Pages
 .nojekyll               serve the files as-is instead of running them through Jekyll
 ```
@@ -84,6 +84,24 @@ the markup and let the script do the duplication.
 
 Only names traceable to an actual upload belong there. The list was trimmed once already after
 guests were added from an unverified summary rather than the channel's own feed.
+
+## Link previews
+
+`assets/img/og-card.png` is what appears when the link is pasted into a message, and it has three
+constraints that are easy to break by swapping in "a nicer picture":
+
+- **1200×630.** Below roughly 600×315 most platforms downgrade to a small thumbnail or show nothing.
+- **No transparency.** A PNG with an alpha channel gets composited against whatever the app feels
+  like, usually white, which wrecks a dark card. Flatten onto an opaque background.
+- **Absolute URL.** `og:image` must be a full `https://` address. Scrapers do not resolve relative
+  paths, which is why the link previewed as bare text before this existed.
+
+Replacing it means replacing the file at the same path and keeping the `og:image:width` and
+`og:image:height` tags in `index.html` truthful.
+
+Platforms cache aggressively. Once a URL has been scraped with no image, that result sticks, so a
+new card will not appear on its own — Meta's Sharing Debugger forces a re-fetch for Facebook and
+Instagram, and appending a throwaway query string (`?v=2`) works as a general nudge elsewhere.
 
 ## Booking address
 
