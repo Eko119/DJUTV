@@ -21,9 +21,22 @@ Then visit `http://localhost:8000`.
 ## Deploying
 
 The site is plain HTML, CSS, JS and images, so anything that serves static files will host it.
-The simplest route is **GitHub Pages**: in the repository's Settings → Pages, set the source to
-the branch you want to publish and the root (`/`) folder. Netlify, Vercel and Cloudflare Pages all
-work the same way — point them at the repository and set no build command.
+It is published with **GitHub Pages** from the `gh-pages` branch (Settings → Pages, source
+"Deploy from a branch", root `/` folder), and served at **https://djugocrazy.com**.
+
+The `CNAME` file at the repository root is what claims that domain — GitHub Pages reads it on every
+deploy, so it must stay in place and must stay in the branch Pages builds from. Deleting it reverts
+the site to the `github.io` address.
+
+DNS lives at Cloudflare, which is also the registrar. The apex and `www` both point at
+`eko119.github.io` as CNAME records; Cloudflare flattens the apex one automatically. Two settings
+matter and are easy to get wrong:
+
+- The records must be **DNS only** (grey cloud) while GitHub provisions the TLS certificate.
+  Proxying blocks the validation request, and GitHub's "Enforce HTTPS" box stays greyed out.
+- Cloudflare's SSL/TLS mode must be **Full**, never **Flexible**. Flexible makes Cloudflare talk
+  plain HTTP to GitHub, GitHub redirects to HTTPS, and the two loop until the browser gives up with
+  `ERR_TOO_MANY_REDIRECTS`.
 
 ## Structure
 
