@@ -45,7 +45,7 @@ index.html              the whole page
 privacy.html            privacy policy, required for AdSense approval
 assets/css/styles.css   design tokens + all component styles
 assets/js/main.js       Google tags, click-to-play embeds, halftone canvas, ticker, booking CTA
-assets/img/             logo (full, small, favicon) + the link-preview card
+assets/img/             logo (full, small, favicon), the link-preview card, the couch photo
 CNAME                   claims djugocrazy.com for GitHub Pages
 .nojekyll               serve the files as-is instead of running them through Jekyll
 ```
@@ -82,6 +82,17 @@ the markup and let the script do the duplication.
 
 Only names traceable to an actual upload belong there. The list was trimmed once already after
 guests were added from an unverified summary rather than the channel's own feed.
+
+## Provisional copy
+
+The **About The Couch** section (`id="couch"` in `index.html`, between Follow and Booking) carries
+placeholder copy drafted from the client's photo and messages. It has not been written or approved
+by the client, and it is marked with a `PROVISIONAL COPY` comment in the markup.
+
+When the approved bio arrives, replace the contents of `<div class="couch__copy">` — the eyebrow,
+the `<h2>` heading and the paragraph — and delete the comment. Add or remove `<p class="prose">`
+paragraphs freely; the layout grows with the copy and needs no CSS change. The photo is
+`assets/img/couch.jpg`, supplied by the client.
 
 ## Link previews
 
@@ -180,4 +191,6 @@ phones most of the audience is using. When a video is clicked it loads through
 
 Video IDs, titles, dates and view counts were taken from the channel's public feed. Channel and
 follower figures came from the YouTube and Instagram profiles. Podcast links point at the real
-Spotify, Apple Podcasts, iHeartRadio and Deezer listings. Nothing on the page is placeholder copy.
+Spotify, Apple Podcasts, iHeartRadio and Deezer listings. The second channel, DJU WORLDWIDE, was
+confirmed against its own YouTube page; its "Food reviews" label comes from the client's description
+of it and matches its first upload. The only unsourced copy is the provisional couch text above.

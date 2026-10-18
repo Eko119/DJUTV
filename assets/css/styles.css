@@ -421,13 +421,24 @@ a { color: var(--gold); text-decoration: none; }
 .social__count { font-family: var(--font-mono); font-size: .75rem; color: var(--ash); font-variant-numeric: tabular-nums; }
 .social--lead a { background: var(--ink-3); box-shadow: inset 3px 0 0 var(--gold); }
 .social--lead .social__handle { color: var(--gold); }
-/* Five networks in a three-track grid: the lead takes two so no card sits alone. */
-.social--lead { grid-column: span 2; }
+/* Six cards fill the three- and two-track grids evenly; an odd count leaves one card alone. */
 @media (max-width: 860px) { .socials { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) {
-  .socials { grid-template-columns: 1fr; }
-  .social--lead { grid-column: auto; }
+@media (max-width: 480px) { .socials { grid-template-columns: 1fr; } }
+
+/* ---------- couch ---------- */
+
+/* Booking below shares this ground, so the hairline marks the section break. */
+.couch { border-bottom: 1px solid var(--line-soft); }
+.couch__inner {
+  display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: clamp(2rem, 5vw, 4rem); align-items: center;
 }
+.couch__copy .section__title { margin-bottom: 1.15rem; }
+.couch__photo {
+  width: 100%; max-width: 440px; height: auto;
+  border: 1px solid var(--line-soft); border-radius: var(--radius);
+}
+@media (max-width: 800px) { .couch__inner { grid-template-columns: 1fr; } }
 
 /* ---------- booking ---------- */
 
