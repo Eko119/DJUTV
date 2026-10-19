@@ -1,8 +1,7 @@
 # DJUTV
 
 The website for **DJUTV** — Chicago's in-the-street interview channel, hosted by DJ U. Exclusive
-conversations with entertainers, entrepreneurs and community leaders, posting since 2021 (the
-YouTube channel itself was created in 2015).
+conversations with entertainers, entrepreneurs and community leaders. Est. October 18, 2021.
 The slogan is **#DJUGOCRAZY**.
 
 A single static page with no build step, no framework and no dependencies to install. Open
@@ -58,6 +57,11 @@ data, the wordmark beside the logo, and the share card. Not "DJ U TV". The host 
 
 Two names have already been through a correction and should not come back: "DJ Univercity" was
 never right, and a spaced-out "DJ U TV" was used briefly before being reverted.
+
+The founding date is written exactly **Est. October 18, 2021**, and as `2021-10-18` in the
+structured data's `foundingDate`, which requires that machine format. YouTube shows the channel as
+joined in October 2015; that is when the account was created, not the founding date, so don't
+"correct" the site back to it.
 
 ## Keeping it current
 
