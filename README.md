@@ -1,7 +1,8 @@
 # DJUTV
 
 The website for **DJUTV** — Chicago's in-the-street interview channel, hosted by DJ U. Exclusive
-conversations with entertainers, entrepreneurs and community leaders, running since October 2015.
+conversations with entertainers, entrepreneurs and community leaders, posting since 2021 (the
+YouTube channel itself was created in 2015).
 The slogan is **#DJUGOCRAZY**.
 
 A single static page with no build step, no framework and no dependencies to install. Open
@@ -69,6 +70,10 @@ live feed — worth refreshing every few months.
 **Videos.** Each video is an `<article>` carrying a `data-video="YOUTUBE_ID"` attribute. To swap
 one out, change that ID, the thumbnail URL, the title, the date and the view count. Nothing else
 references the video, so a straight find-and-replace on the old ID is safe.
+
+The Latest section shows the newest uploads from the channel's feed, skipping Shorts and keeping
+one video per guest so the grid never repeats coverage. Below it, the "Next from DJUTV" teaser
+(`lead--next`) features the second channel, DJU WORLDWIDE, and is updated the same way.
 
 The thumbnails come from `i.ytimg.com/vi/<ID>/hqdefault.jpg`, which exists for every YouTube video.
 It is a 4:3 image with the 16:9 frame letterboxed inside it, and the CSS crops it back to 16:9 with
