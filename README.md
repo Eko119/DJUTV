@@ -86,11 +86,15 @@ the script hides it and a typographic poster underneath takes over, so a card ne
 
 **Guest names in the ticker.** The scrolling strip under the hero is one `<span class="ticker__set">`
 in `index.html`. The script clones it so the marquee loops seamlessly, which is why the CSS
-animation translates by exactly `-50%` — add or remove names freely, but keep it to a single set in
-the markup and let the script do the duplication.
+animation translates by exactly `-50%` — keep it to a single set in the markup and let the script
+do the duplication.
 
-Only names traceable to an actual upload belong there. The list was trimmed once already after
-guests were added from an unverified summary rather than the channel's own feed.
+The loop only stays seamless while one set is at least as wide as the screen; any narrower and a
+blank gap opens at the end of each pass. The current 20 names render about 2,770px wide, which
+covers 2560px monitors, so removing or shortening names can bring the gap back on wide screens.
+The 48s loop is fixed, so a longer list also scrolls faster (about 58px/s now).
+
+The names are the client's own list of notable guests, in the order he gave them.
 
 ## Provisional copy
 
