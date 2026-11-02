@@ -28,6 +28,11 @@ The `CNAME` file at the repository root is what claims that domain — GitHub Pa
 deploy, so it must stay in place and must stay in the branch Pages builds from. Deleting it reverts
 the site to the `github.io` address.
 
+Everything in the publishing branch is served, not just the pages: a README committed there is
+readable at `djugocrazy.com/README.md`. Write this file as a public document, and when updating
+`gh-pages`, publish only the site itself — `index.html`, `privacy.html`, `assets/`, `CNAME` and
+`.nojekyll`.
+
 DNS lives at Cloudflare, which is also the registrar. The apex and `www` both point at
 `eko119.github.io` as CNAME records; Cloudflare flattens the apex one automatically. Two settings
 matter and are easy to get wrong:
@@ -44,11 +49,15 @@ matter and are easy to get wrong:
 index.html              the whole page
 privacy.html            privacy policy, required for AdSense approval
 assets/css/styles.css   design tokens + all component styles
-assets/js/main.js       Google tags, click-to-play embeds, halftone canvas, ticker, booking CTA
+assets/js/main.js       Google tags, menu, ticker, click-to-play embeds, halftone canvas, booking CTA
 assets/img/             logo (full, small, favicon), the link-preview card, the couch photo
 CNAME                   claims djugocrazy.com for GitHub Pages
 .nojekyll               serve the files as-is instead of running them through Jekyll
 ```
+
+There is no templating: the header and footer are written out in both pages, so a link added to one
+belongs in the other too. The privacy page's footer differs only by a leading Home link and by
+marking Privacy as the current page.
 
 ## Naming
 
@@ -84,28 +93,51 @@ It is a 4:3 image with the 16:9 frame letterboxed inside it, and the CSS crops i
 `object-fit: cover` — which lands exactly on the video frame. If a thumbnail ever fails to load,
 the script hides it and a typographic poster underneath takes over, so a card never renders broken.
 
-**Guest names in the ticker.** The scrolling strip under the hero is one `<span class="ticker__set">`
-in `index.html`. The script clones it so the marquee loops seamlessly, which is why the CSS
-animation translates by exactly `-50%` — keep it to a single set in the markup and let the script
-do the duplication.
+**Guest names in the ticker.** The scrolling strip under the hero is one `<ul class="ticker__set">`
+in `index.html`, one `<li>` per name. The script clones it so the marquee loops seamlessly, which is
+why the CSS animation translates by exactly `-50%` — keep it to a single list in the markup and let
+the script do the duplication. The clone is marked `aria-hidden`, so screen readers hear the names
+once, as a list labelled "Notable guests". The `role="list"` is deliberate: VoiceOver on iOS stops
+announcing a list as a list once its bullets are styled away (WebKit bug 304137), and the role
+restores it. Validators flag it as redundant because they can't see the CSS; keep it anyway.
+
+The space between names comes from one value, `--ticker-gap` on `.ticker`. Each name carries its
+diamond with that gap on both sides, and the set ends on the same gap, so the join between loops is
+spaced exactly like everything else. Spacing belongs there, not in spaces or margins on single names.
 
 The loop only stays seamless while one set is at least as wide as the screen; any narrower and a
-blank gap opens at the end of each pass. The current 20 names render about 2,770px wide, which
+blank gap opens at the end of each pass. The current 20 names render about 3,050px wide, which
 covers 2560px monitors, so removing or shortening names can bring the gap back on wide screens.
-The 48s loop is fixed, so a longer list also scrolls faster (about 58px/s now).
+The loop takes 53s, about 58px/s. Because the duration is fixed, a longer list scrolls faster and a
+shorter one slower; to keep the speed when the list changes, scale the duration with the width.
+
+Nothing moves until the script has added the clone. The same step sets `data-state` on `.ticker`,
+which starts the loop and reveals a pause button at the right end of the strip, so the names never
+scroll without a way to stop them (WCAG 2.2.2). Pausing changes only the animation's play state, so
+playing again continues from the same spot. The pause lasts for the page view and is deliberately
+not remembered: the privacy policy promises the site writes nothing to the visitor's device, so
+storing it would mean changing that policy too.
+
+Visitors whose system asks for reduced motion, and browsers running without JavaScript, get no
+scrolling and no button: the list wraps into compact centered rows, with smaller names and a tighter
+gap, so all twenty fit in a short block.
 
 The names are the client's own list of notable guests, in the order he gave them.
 
-## Provisional copy
+## The Couch
 
-The **About The Couch** section (`id="couch"` in `index.html`, between Follow and Booking) carries
-placeholder copy drafted from the client's photo and messages. It has not been written or approved
-by the client, and it is marked with a `PROVISIONAL COPY` comment in the markup.
+The **About The Couch** section (`id="couch"` in `index.html`, between Follow and Booking) presents
+the couch as a monument to the culture rather than a curse: the couch is the platform, and the
+people who sit on it are the culture.
 
-When the approved bio arrives, replace the contents of `<div class="couch__copy">` — the eyebrow,
-the `<h2>` heading and the paragraph — and delete the comment. Add or remove `<p class="prose">`
-paragraphs freely; the layout grows with the copy and needs no CSS change. The photo is
-`assets/img/couch.jpg`, supplied by the client.
+The copy is editorial positioning. It deliberately makes no claims about the couch's history —
+where it came from, how long it has been in use, who has sat on it — and mentions the curse only as
+something said online. Keep it that way unless a claim can be sourced.
+
+If the client supplies their own text, it replaces this. Edit the contents of
+`<div class="couch__copy">` — the eyebrow, the `<h2>` heading and the paragraphs. Add or remove
+`<p class="prose">` paragraphs freely; the layout grows with the copy and needs no CSS change. The
+photo is `assets/img/couch.jpg`, supplied by the client.
 
 ## Link previews
 
@@ -191,6 +223,15 @@ design system — a deliberate choice for a Chicago street-press brand, paired w
 copy and Roboto Mono for data and labels. The recurring six-pointed star marking each section is
 the star from the Chicago flag.
 
+If the web fonts are slow or blocked, headlines fall back to a condensed system face where the
+platform has one (Arial Narrow where it's installed, Avenir Next Condensed on iPhones, Roboto
+Condensed on Android), and an over-long word may break rather than spill past a narrow screen.
+
+Below 940px the header links fold behind a Menu button. It is a plain disclosure rather than a
+dialog: the links follow the button in the tab order, and Escape, choosing a link, tapping elsewhere
+or tabbing away closes it. Without JavaScript the button never appears and the links show as a
+second header row instead.
+
 The page commits to a single dark theme rather than following the viewer's light/dark preference.
 That is intentional: the brand lives on a black ground everywhere else it appears, and a light mode
 would weaken it. Every color is painted explicitly so the page holds regardless of the host.
@@ -206,4 +247,6 @@ Video IDs, titles, dates and view counts were taken from the channel's public fe
 follower figures came from the YouTube and Instagram profiles. Podcast links point at the real
 Spotify, Apple Podcasts, iHeartRadio and Deezer listings. The second channel, DJU WORLDWIDE, was
 confirmed against its own YouTube page; its "Food reviews" label comes from the client's description
-of it and matches its first upload. The only unsourced copy is the provisional couch text above.
+of it and matches its first upload. The only copy not drawn from a source is the couch bio above,
+which is editorial positioning; the two facts it rests on, that guests sit on the couch to be
+interviewed and that people online call it cursed, are both well documented.

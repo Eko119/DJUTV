@@ -62,6 +62,7 @@
     <path d="M12 1 L14.75 7.24 L21.53 6.5 L17.5 12 L21.53 17.5 L14.75 16.76 L12 23 L9.25 16.76 L2.47 17.5 L6.5 12 L2.47 6.5 L9.25 7.24 Z"/>
   </symbol>
   <symbol id="play" viewBox="0 0 24 24"><path d="M8 5.5 L19 12 L8 18.5 Z"/></symbol>
+  <symbol id="pause" viewBox="0 0 24 24"><path d="M6.5 5 H10.5 V19 H6.5 Z M13.5 5 H17.5 V19 H13.5 Z"/></symbol>
 </svg>
 
 <a class="skip-link" href="#main">Skip to content</a>
@@ -75,7 +76,12 @@
         <span class="brand__sub">Chicago</span>
       </span>
     </a>
-    <nav class="nav" aria-label="Primary">
+    <button class="btn btn--ghost menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">
+      <svg class="menu-toggle__open" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
+      <svg class="menu-toggle__close" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>
+      Menu
+    </button>
+    <nav class="nav" id="primary-nav" aria-label="Primary">
       <a href="#watch">Watch</a>
       <a href="#listen">Listen</a>
       <a href="#about">About</a>
@@ -117,12 +123,35 @@
     </div>
   </section>
 
-  <div class="ticker" aria-hidden="true">
+  <div class="ticker">
     <div class="ticker__track">
-      <span class="ticker__set">
-        <b>Bloodhound Lil Jeff</b><i></i><b>Bloodhound Q50</b><i></i><b>Lil Scoom</b><i></i><b>THF Zoo</b><i></i><b>051 Woo</b><i></i><b>Lil Mikey</b><i></i><b>Stain</b><i></i><b>DMG Lil Duece</b><i></i><b>THF TP</b><i></i><b>800TJ</b><i></i><b>Foolio</b><i></i><b>Q50wLil50</b><i></i><b>Munna Duke</b><i></i><b>O&rsquo;Block Louie</b><i></i><b>Makado600</b><i></i><b>T-Slick</b><i></i><b>THF Twin</b><i></i><b>Tray Tray</b><i></i><b>Cragg Hardaway</b><i></i><b>EST Lu Mike</b><i></i>
-      </span>
+      <ul class="ticker__set" role="list" aria-label="Notable guests">
+        <li>Bloodhound Lil Jeff</li>
+        <li>Bloodhound Q50</li>
+        <li>Lil Scoom</li>
+        <li>THF Zoo</li>
+        <li>051 Woo</li>
+        <li>Lil Mikey</li>
+        <li>Stain</li>
+        <li>DMG Lil Duece</li>
+        <li>THF TP</li>
+        <li>800TJ</li>
+        <li>Foolio</li>
+        <li>Q50wLil50</li>
+        <li>Munna Duke</li>
+        <li>O&rsquo;Block Louie</li>
+        <li>Makado600</li>
+        <li>T-Slick</li>
+        <li>THF Twin</li>
+        <li>Tray Tray</li>
+        <li>Cragg Hardaway</li>
+        <li>EST Lu Mike</li>
+      </ul>
     </div>
+    <button class="ticker__toggle" type="button" aria-label="Pause scrolling names">
+      <svg class="ticker__icon ticker__icon--pause" aria-hidden="true"><use href="#pause"></use></svg>
+      <svg class="ticker__icon ticker__icon--play" aria-hidden="true"><use href="#play"></use></svg>
+    </button>
   </div>
 
   <section class="section" id="watch">
@@ -313,19 +342,21 @@
 
   <section class="section couch" id="couch">
     <div class="wrap couch__inner">
-      <!-- PROVISIONAL COPY: drafted from the client's photo and messages, not written or approved
-           by the client. Replace the contents of .couch__copy with the approved "About The Couch" bio. -->
+      <!-- Editorial copy: keep it free of claims about the couch's history unless they can be
+           sourced. See "The Couch" in the README. -->
       <div class="couch__copy">
         <p class="eyebrow"><svg class="star" aria-hidden="true"><use href="#star6"></use></svg> About The Couch</p>
-        <h2 class="section__title">Brick wall, leather couch</h2>
-        <p class="prose">Magazines spread across the table, a gold portrait on the wall and a camera pointed straight at the seat. This is The Couch.</p>
+        <h2 class="section__title">A monument to the culture</h2>
+        <p class="prose">Online, people call it cursed. Look closer and it&rsquo;s something else: a monument, built by everyone who has taken the seat.</p>
+        <p class="prose">The Couch is where Chicago gets heard. Artists, entrepreneurs and voices from every block sit down here and tell their story their way, on camera, to an audience that came to listen. It offers the platform. They bring the culture.</p>
+        <p class="prose">The Couch doesn&rsquo;t make the moment. The people do. It isn&rsquo;t a curse. It&rsquo;s a seat at the table.</p>
       </div>
       <img class="couch__photo" src="assets/img/couch.jpg" alt="A worn brown leather couch against a brick wall beneath a framed gold portrait, with magazines on a low table, a grey rug and a camera in the foreground" width="820" height="1280" loading="lazy" decoding="async">
     </div>
   </section>
 
   <section class="section booking" id="booking">
-    <div class="wrap booking__inner">
+    <div class="wrap">
       <p class="eyebrow"><svg class="star" aria-hidden="true"><use href="#star6"></use></svg> Booking &amp; press</p>
       <h2 class="booking__title">Got a story?</h2>
       <p class="prose booking__prose">Interview requests, features, premieres and partnership inquiries all go to the same place. Artists and publicists welcome — so are the people whose story nobody has asked for yet.</p>
