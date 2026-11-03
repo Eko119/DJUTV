@@ -17,7 +17,9 @@
   --bone:       #EDEAE3;
   --ash:        #939AAB;
 
-  --font-display: "Big Shoulders Display", "Oswald", "Arial Narrow", "Haettenschweiler", Impact, sans-serif;
+  /* The condensed fallbacks keep headlines close to the brand face while it loads or if it fails:
+     Avenir Next Condensed ships with iOS, sans-serif-condensed is Android's Roboto Condensed. */
+  --font-display: "Big Shoulders Display", "Oswald", "Arial Narrow", "Avenir Next Condensed", "Roboto Condensed", "sans-serif-condensed", "Haettenschweiler", Impact, sans-serif;
   --font-body:    "Barlow", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono:    "Roboto Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
@@ -44,6 +46,9 @@ body {
   font-size: 1.0625rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* A word only breaks when it cannot fit on a line by itself, e.g. a headline set in a wide
+     fallback face at 320px. With the brand fonts loaded every word fits, so nothing changes. */
+  overflow-wrap: break-word;
 }
 
 img { max-width: 100%; display: block; }
@@ -52,6 +57,10 @@ img[hidden] { display: none; }
 a { color: var(--gold); text-decoration: none; }
 
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+/* The small text links are under 24px tall on their own. The padding lifts each tap target past
+   that, and the matching negative margin keeps the text and the layout exactly where they were. */
+.nav a, .section__link, .footer__nav a { padding-block: .25rem; margin-block: -.25rem; }
 
 .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
 
@@ -75,6 +84,8 @@ a { color: var(--gold); text-decoration: none; }
   color: var(--steel);
 }
 .star { width: 12px; height: 12px; flex: none; fill: var(--ember); }
+/* Keeps a date on one line so a narrow screen wraps before it rather than orphaning the year. */
+.eyebrow__date { white-space: nowrap; }
 
 .section__title {
   margin: 0;
@@ -148,7 +159,33 @@ a { color: var(--gold); text-decoration: none; }
 
 .masthead__cta { padding: .65rem 1.15rem; }
 
-@media (max-width: 940px) { .nav { display: none; } }
+/* The Menu button exists only on small screens, and only once the script has marked the header
+   with data-menu, so a page without JavaScript never shows a button that cannot work. */
+.menu-toggle { display: none; gap: .55rem; padding: .65rem 1rem; line-height: 1.6; background: transparent; cursor: pointer; }
+.menu-toggle svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; }
+.masthead[data-menu="open"] .menu-toggle__open,
+.masthead:not([data-menu="open"]) .menu-toggle__close { display: none; }
+
+@media (max-width: 940px) {
+  .nav { display: none; }
+  .masthead[data-menu] .menu-toggle { display: inline-flex; }
+  /* Open, the same links drop below the header as full-width rows with room to tap. */
+  .masthead[data-menu="open"] .nav {
+    display: flex; flex-direction: column; gap: 0;
+    position: absolute; top: 100%; left: 0; right: 0;
+    padding: .25rem var(--gutter) .75rem;
+    background: var(--ink); border-block: 1px solid var(--line-soft);
+  }
+  .masthead[data-menu="open"] .nav a { padding-block: .9rem; margin-block: 0; font-size: .875rem; }
+  .masthead[data-menu="open"] .nav a + a { border-top: 1px solid var(--line-soft); }
+}
+/* Without JavaScript there is no Menu button, so small screens show the links as a second row,
+   and the taller header scrolls away instead of staying pinned. */
+@media (max-width: 940px) and (scripting: none) {
+  .masthead { position: static; }
+  .masthead__inner { flex-wrap: wrap; height: auto; min-height: 70px; padding-block: .85rem; row-gap: .6rem; }
+  .nav { display: flex; flex-wrap: wrap; order: 1; width: 100%; gap: .6rem 1.4rem; }
+}
 @media (max-width: 420px) { .masthead__cta { display: none; } }
 
 /* ---------- hero ---------- */
@@ -241,20 +278,63 @@ a { color: var(--gold); text-decoration: none; }
 
 /* ---------- ticker ---------- */
 
+/* One value sets the rhythm. Each name carries its diamond with the gap on both sides, and the
+   set ends on the same gap, so the join between loops matches the space between any two names.
+   53s holds the scroll at about 58px/s for the current list; the README covers changing it. */
 .ticker {
-  overflow: hidden; border-bottom: 1px solid var(--line-soft);
+  --ticker-gap: 2rem;
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--line-soft);
   background: var(--ink-2); padding: .9rem 0;
 }
-.ticker__track { display: flex; width: max-content; animation: slide 48s linear infinite; }
-.ticker__set { display: flex; align-items: center; padding-right: 2.5rem; }
-.ticker__set b {
+.ticker__track { display: flex; width: max-content; }
+/* Nothing moves until the script has added the copy and set data-state, which also reveals the
+   pause button: without JavaScript there is no loop to jump, and motion never appears without a
+   way to stop it. Pausing flips only the play state, so the loop resumes from the same frame. */
+.ticker[data-state] .ticker__track { animation: slide 53s linear infinite; }
+.ticker[data-state="paused"] .ticker__track { animation-play-state: paused; }
+.ticker__set {
+  display: flex; align-items: center; gap: var(--ticker-gap);
+  margin: 0; padding: 0 var(--ticker-gap) 0 0; list-style: none;
+}
+.ticker__set li {
+  display: flex; align-items: center; gap: var(--ticker-gap);
   font-family: var(--font-display); font-weight: 700;
   font-size: 1.35rem; letter-spacing: .02em; text-transform: uppercase;
   color: var(--ash); white-space: nowrap;
 }
-.ticker__set i { width: 6px; height: 6px; margin: 0 1.5rem; background: var(--ember); flex: none; transform: rotate(45deg); }
+.ticker__set li::after { content: ""; width: 6px; height: 6px; flex: none; background: var(--ember); transform: rotate(45deg); }
 @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .ticker__track { animation: none; } }
+
+/* The pause button caps the right end of the strip and the names slide under it. Full strip
+   height makes it an easy tap; the focus ring sits inside because the strip clips overflow. */
+.ticker__toggle {
+  display: none; position: absolute; inset: 0 0 0 auto; z-index: 1;
+  width: 3.25rem; place-items: center; padding: 0;
+  border: 0; border-left: 1px solid var(--line-soft); background: var(--ink-2);
+  color: var(--ash); cursor: pointer; transition: color .18s ease;
+}
+.ticker[data-state] .ticker__toggle { display: grid; }
+.ticker__toggle:hover { color: var(--gold); }
+.ticker__toggle:focus-visible { outline-offset: -6px; }
+.ticker__icon { width: 18px; height: 18px; fill: currentColor; }
+.ticker[data-state="paused"] .ticker__icon--pause,
+.ticker:not([data-state="paused"]) .ticker__icon--play { display: none; }
+
+/* Static presentation, for reduced motion and for browsers without JavaScript: nothing scrolls,
+   the copy and the pause button are hidden, and the one list wraps into compact centered rows
+   on a tighter rhythm, so all twenty names sit in a short block. */
+@media (prefers-reduced-motion: reduce), (scripting: none) {
+  .ticker { --ticker-gap: 1rem; }
+  .ticker__track { width: auto; }
+  .ticker[data-state] .ticker__track { animation: none; }
+  .ticker__set {
+    flex-wrap: wrap; justify-content: center; row-gap: .35rem;
+    width: 100%; max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter);
+  }
+  .ticker__set li { font-size: 1.125rem; line-height: 1.35; white-space: normal; }
+  .ticker__set[aria-hidden="true"], .ticker__set li:last-child::after,
+  .ticker[data-state] .ticker__toggle { display: none; }
+}
 
 /* ---------- sections ---------- */
 
@@ -336,6 +416,15 @@ a { color: var(--gold); text-decoration: none; }
 }
 .tag--live { background: rgba(224, 118, 42, .14); color: var(--ember); border: 1px solid rgba(224, 118, 42, .3); }
 
+/* The "next from DJUTV" teaser reuses the lead layout below the grid, smaller and divided from it. */
+.lead--next {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+  padding: clamp(3rem, 6vw, 4.5rem) 0 0;
+  border-bottom: 0; border-top: 1px solid var(--line-soft);
+}
+.tag--next { background: rgba(124, 144, 180, .12); color: var(--steel); border: 1px solid rgba(124, 144, 180, .3); }
+
 @media (max-width: 800px) { .lead { grid-template-columns: 1fr; } }
 
 /* ---------- video grid ---------- */
@@ -379,7 +468,7 @@ a { color: var(--gold); text-decoration: none; }
   display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, .8fr);
   gap: clamp(2rem, 5vw, 4rem);
 }
-.about__main .section__title { margin-bottom: 1.35rem; }
+.about__main .section__title { margin-bottom: 1.15rem; }
 
 .about__side { border-top: 2px solid var(--gold); padding-top: 1.4rem; }
 .about__sideTitle {
@@ -421,18 +510,28 @@ a { color: var(--gold); text-decoration: none; }
 .social__count { font-family: var(--font-mono); font-size: .75rem; color: var(--ash); font-variant-numeric: tabular-nums; }
 .social--lead a { background: var(--ink-3); box-shadow: inset 3px 0 0 var(--gold); }
 .social--lead .social__handle { color: var(--gold); }
-/* Five networks in a three-track grid: the lead takes two so no card sits alone. */
-.social--lead { grid-column: span 2; }
+/* Six cards fill the three- and two-track grids evenly; an odd count leaves one card alone. */
 @media (max-width: 860px) { .socials { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) {
-  .socials { grid-template-columns: 1fr; }
-  .social--lead { grid-column: auto; }
+@media (max-width: 480px) { .socials { grid-template-columns: 1fr; } }
+
+/* ---------- couch ---------- */
+
+/* Booking below shares this ground, so the hairline marks the section break. */
+.couch { border-bottom: 1px solid var(--line-soft); }
+.couch__inner {
+  display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: clamp(2rem, 5vw, 4rem); align-items: center;
 }
+.couch__copy .section__title { margin-bottom: 1.15rem; }
+.couch__photo {
+  width: 100%; max-width: 440px; height: auto;
+  border: 1px solid var(--line-soft); border-radius: var(--radius);
+}
+@media (max-width: 800px) { .couch__inner { grid-template-columns: 1fr; } }
 
 /* ---------- booking ---------- */
 
 .booking { background: var(--ink); }
-.booking__inner { max-width: 720px; }
 .booking__title {
   margin: 0 0 1.15rem;
   font-family: var(--font-display); font-weight: 900;
@@ -490,6 +589,7 @@ a { color: var(--gold); text-decoration: none; }
   transition: color .18s ease;
 }
 .footer__nav a:hover { color: var(--gold); }
+.footer__nav a[aria-current="page"] { color: var(--bone); }
 .footer__legal { margin: 0; font-size: .8125rem; color: var(--ash); }
 .footer__slogan {
   margin: 0;

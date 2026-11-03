@@ -67,12 +67,61 @@ document.querySelectorAll(".socials a, .platforms a").forEach((link) => {
   });
 });
 
+/* ---- small-screen menu ----
+   Below 940px the header links fold behind a Menu button. It is a plain
+   disclosure rather than a dialog: the links follow the button in the tab
+   order, and Escape, choosing a link, tapping elsewhere or tabbing away all
+   close it. The button only appears once this has set data-menu. */
+const masthead = document.querySelector(".masthead");
+const menuToggle = document.querySelector(".menu-toggle");
+if (masthead && menuToggle) {
+  const isOpen = () => masthead.dataset.menu === "open";
+  const setMenu = (open) => {
+    masthead.dataset.menu = open ? "open" : "closed";
+    menuToggle.setAttribute("aria-expanded", String(open));
+  };
+  setMenu(false);
+  menuToggle.addEventListener("click", () => setMenu(!isOpen()));
+  masthead.addEventListener("click", (e) => { if (e.target.closest(".nav a")) setMenu(false); });
+  // Focus leaving the header for another element closes it, so nothing focused sits under it.
+  masthead.addEventListener("focusout", (e) => {
+    if (isOpen() && e.relatedTarget && !masthead.contains(e.relatedTarget)) setMenu(false);
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (isOpen() && !masthead.contains(e.target)) setMenu(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && isOpen()) { setMenu(false); menuToggle.focus(); }
+  });
+  // Mirrors the CSS breakpoint, so a menu left open doesn't linger after widening the window.
+  window.matchMedia("(max-width: 940px)").addEventListener("change", (e) => { if (!e.matches) setMenu(false); });
+}
+
 /* ---- seamless ticker ----
    The CSS loop translates the track by -50%, so the marquee only lines up
-   if the track holds exactly two copies of the name set. */
+   if the track holds exactly two copies of the name set. The copy exists
+   only for the eye: screen readers get the list once, from the markup, and
+   the static styles hide the copy by this same attribute.
+   Setting data-state is what starts the loop and reveals the pause button,
+   so motion never exists without a way to stop it. A pause lasts for the
+   page view and is not stored: the privacy policy promises the site writes
+   nothing to the visitor's device. */
+const ticker = document.querySelector(".ticker");
 const tickerTrack = document.querySelector(".ticker__track");
 const tickerSet = document.querySelector(".ticker__set");
-if (tickerTrack && tickerSet) tickerTrack.append(tickerSet.cloneNode(true));
+const tickerToggle = document.querySelector(".ticker__toggle");
+if (ticker && tickerTrack && tickerSet && tickerToggle) {
+  const copy = tickerSet.cloneNode(true);
+  copy.setAttribute("aria-hidden", "true");
+  tickerTrack.append(copy);
+
+  const setTicker = (state) => {
+    ticker.dataset.state = state;
+    tickerToggle.setAttribute("aria-label", state === "paused" ? "Play scrolling names" : "Pause scrolling names");
+  };
+  tickerToggle.addEventListener("click", () => setTicker(ticker.dataset.state === "paused" ? "running" : "paused"));
+  setTicker("running");
+}
 
 /* ---- click-to-play YouTube embeds ----
    Nothing loads from YouTube until someone actually asks for a video. */
