@@ -29,9 +29,23 @@ deploy, so it must stay in place and must stay in the branch Pages builds from. 
 the site to the `github.io` address.
 
 Everything in the publishing branch is served, not just the pages: a README committed there is
-readable at `djugocrazy.com/README.md`. Write this file as a public document, and when updating
-`gh-pages`, publish only the site itself — `index.html`, `privacy.html`, `assets/`, `CNAME` and
-`.nojekyll`.
+readable at `djugocrazy.com/README.md`. So `gh-pages` should only ever hold the site itself —
+`index.html`, `privacy.html`, `assets/`, `CNAME` and `.nojekyll` — and `scripts/stage-site.sh`
+builds it from exactly that list:
+
+```
+scripts/stage-site.sh preview ~/djutv-preview.zip   # noindex copy for the client preview Worker
+scripts/stage-site.sh pages                         # stage the next gh-pages commit locally
+git push origin gh-pages-staged:gh-pages            # publish, as its own deliberate step
+scripts/stage-site.sh check                         # afterwards: live site vs gh-pages, no strays
+```
+
+`pages` rebuilds the branch from an empty tree on top of its history, so whatever it held before,
+including an old client-preview folder, is deleted in the same commit rather than carried forward.
+The push is a plain fast-forward; nothing here force-pushes or touches `main`.
+
+On GitHub Free, Pages needs the repository to be public; a paid plan can publish from a private
+one. Either way the site itself is public.
 
 DNS lives at Cloudflare, which is also the registrar. The apex and `www` both point at
 `eko119.github.io` as CNAME records; Cloudflare flattens the apex one automatically. Two settings
@@ -53,6 +67,7 @@ assets/js/main.js       Google tags, menu, ticker, click-to-play embeds, halfton
 assets/img/             logo (full, small, favicon), the link-preview card, the couch photo
 CNAME                   claims djugocrazy.com for GitHub Pages
 .nojekyll               serve the files as-is instead of running them through Jekyll
+scripts/stage-site.sh   builds the preview zip and the gh-pages commit from the site files only
 ```
 
 There is no templating: the header and footer are written out in both pages, so a link added to one
