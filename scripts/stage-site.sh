@@ -6,8 +6,8 @@
 #                                           Worker, zipped outside the repository
 #   scripts/stage-site.sh pages             stage the next gh-pages commit on the local branch
 #                                           gh-pages-staged; extra arguments go to git commit
-#   scripts/stage-site.sh check [URL]       compare a live site with origin/gh-pages and confirm
-#                                           that no non-site path is reachable
+#   scripts/stage-site.sh check [URL [REF]] compare a site with REF (default origin/gh-pages) and
+#                                           confirm that no non-site path is reachable
 #
 # None of these pushes, touches main, or changes a setting. Publishing stays a separate step:
 #   git push origin gh-pages-staged:gh-pages
@@ -20,11 +20,12 @@ SITE_RE='^(index\.html|privacy\.html|assets/.*|CNAME|\.nojekyll)$'
 die() { echo "stage-site: $*" >&2; exit 1; }
 cd "$(git rev-parse --show-toplevel)"
 # Builds come from committed files only (git archive), so only uncommitted edits can mislead.
-[ -z "$(git status --porcelain --untracked-files=no)" ] || die "commit your changes first, so the build matches a commit"
+committed() { [ -z "$(git status --porcelain --untracked-files=no)" ] || die "commit your changes first, so the build matches a commit"; }
 src=$(git rev-parse --short HEAD)
 
 case "${1:-}" in
 preview)
+  committed
   out=${2:-}; [ -n "$out" ] || die "usage: scripts/stage-site.sh preview OUT.zip"
   out=$(realpath -m "$out")
   case "$out" in "$PWD"/*) die "write the zip outside the repository so it can't be committed";; esac
@@ -53,6 +54,7 @@ PY
   ;;
 
 pages)
+  committed
   git fetch -q origin gh-pages
   wt=$(mktemp -d)
   git worktree add -q --detach "$wt" origin/gh-pages
@@ -74,18 +76,20 @@ pages)
 
 check)
   url=${2:-https://djugocrazy.com}
+  ref=${3:-origin/gh-pages}   # gh-pages-staged checks a staged build served locally, pre-push
   git fetch -q origin gh-pages
+  git rev-parse -q --verify "$ref^{commit}" >/dev/null || die "unknown ref: $ref"
   status=0
-  # Every site file on gh-pages should be served byte for byte.
-  for f in $(git ls-tree -r --name-only origin/gh-pages | grep -E "$SITE_RE" | grep -vE '^(CNAME|\.nojekyll)$'); do
-    if curl -fsS --max-time 20 "$url/$f" 2>/dev/null | cmp -s - <(git show "origin/gh-pages:$f"); then
-      echo "ok       /$f matches origin/gh-pages"
+  # Every site file in REF should be served byte for byte.
+  for f in $(git ls-tree -r --name-only "$ref" | grep -E "$SITE_RE" | grep -vE '^(CNAME|\.nojekyll)$'); do
+    if curl -fsS --max-time 20 "$url/$f" 2>/dev/null | cmp -s - <(git show "$ref:$f"); then
+      echo "ok       /$f matches $ref"
     else
-      echo "STALE    /$f does not match origin/gh-pages"; status=1
+      echo "STALE    /$f does not match $ref"; status=1
     fi
   done
-  # Every non-site path that exists on this branch or ever existed on gh-pages must be absent.
-  for p in $( { git ls-tree -r --name-only HEAD; git log --format= --name-only origin/gh-pages; } | grep -v '^$' | sort -u | grep -vE "$SITE_RE"); do
+  # Every non-site path on this branch, or ever in REF's history, must be absent.
+  for p in $( { git ls-tree -r --name-only HEAD; git log --format= --name-only "$ref"; } | grep -v '^$' | sort -u | grep -vE "$SITE_RE"); do
     code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$url/$p")
     if [ "$code" = 404 ]; then echo "ok       /$p is not served"; else echo "EXPOSED  /$p answers HTTP $code"; status=1; fi
   done
